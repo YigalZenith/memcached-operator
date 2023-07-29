@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: storage-version-migration
+  namespace: memcached-operator-system
+  labels:
+    app: "storage-version-migration"
+spec:
+  ttlSecondsAfterFinished: 600
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app: "storage-version-migration"
+    spec:
+      serviceAccountName: memcached-operator-post-install-job
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: harbor.kaiqi.com/softs/migrate:0.0.2
+          args:
+            - "memcacheds.cache.example.com"
