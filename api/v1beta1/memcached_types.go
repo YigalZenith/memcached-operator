@@ -25,15 +25,15 @@ import (
 
 // MemcachedSpec defines the desired state of Memcached
 type MemcachedSpec struct {
-    // +kubebuilder:validation:Minimum=0
-    // ReplicaSize is the size of the memcached deployment
-    ReplicaSize int32 `json:"replicaSize"`
+	// +kubebuilder:validation:Minimum=0
+	// ReplicaSize is the size of the memcached deployment
+	ReplicaSize int32 `json:"replicaSize"`
 }
 
 // MemcachedStatus defines the observed state of Memcached
 type MemcachedStatus struct {
-    // Nodes are the names of the memcached pods
-    Nodes []string `json:"nodes"`
+	// Nodes are the names of the memcached pods
+	Nodes []string `json:"nodes"`
 }
 
 //+kubebuilder:object:root=true
