@@ -18,13 +18,13 @@ package controllers
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/api/errors"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 
+	cachev1alpha1 "github.com/example/memcached-operator/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	cachev1alpha1 "github.com/example/memcached-operator/api/v1alpha1"
 )
 
 // MemcachedReconciler reconciles a Memcached object
@@ -49,27 +49,27 @@ type MemcachedReconciler struct {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
 func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 
-    log := ctrl.Log.WithValues("memcached", req.NamespacedName)
-    log.Info("Memcached resource has changed.")
-    latest := &cachev1alpha1.Memcached{}
-    err := r.Get(ctx, req.NamespacedName, latest)
-    if err != nil {
-       if errors.IsNotFound(err) {
-          log.Info("Memcached resource not found. Ignoring since object must be deleted")
-          return ctrl.Result{}, nil
-       }
-       // Error reading the object - requeue the request.
-       log.Error(err, "Failed to get Memcached")
-       return ctrl.Result{}, err
-    }
+	log := ctrl.Log.WithValues("memcached", req.NamespacedName)
+	log.Info("Memcached resource has changed.")
+	latest := &cachev1alpha1.Memcached{}
+	err := r.Get(ctx, req.NamespacedName, latest)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Info("Memcached resource not found. Ignoring since object must be deleted")
+			return ctrl.Result{}, nil
+		}
+		// Error reading the object - requeue the request.
+		log.Error(err, "Failed to get Memcached")
+		return ctrl.Result{}, err
+	}
 
-    podNames := []string{"pod1", "pod2", "pod3"}
-    latest.Status.Nodes = podNames
-    err = r.Status().Update(ctx, latest)
-    if err != nil {
-       log.Error(err, "Failed to update Memcached status")
-       return ctrl.Result{}, err
-    }
+	podNames := []string{"pod1", "pod2", "pod3"}
+	latest.Status.Nodes = podNames
+	err = r.Status().Update(ctx, latest)
+	if err != nil {
+		log.Error(err, "Failed to update Memcached status")
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -78,6 +78,6 @@ func (r *MemcachedReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 func (r *MemcachedReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&cachev1alpha1.Memcached{}).
-        WithOptions(controller.Options{MaxConcurrentReconciles: 2}).
+		WithOptions(controller.Options{MaxConcurrentReconciles: 2}).
 		Complete(r)
 }
